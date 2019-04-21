@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "140599643580",
+    "firebase_url": "https://mgxclone.firebaseio.com",
+    "project_id": "mgxclone",
+    "storage_bucket": "mgxclone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140599643580:android:4ee7e7168ef13f81",
+        "android_client_info": {
+          "package_name": "com.hooray.mgx.mgx_clone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "140599643580-v8o50eutkaar7l4v1itofchrahmlir33.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hooray.mgx.mgx_clone",
+            "certificate_hash": "070b4b85a4b71f8f0a6884227343fc473cb99c10"
+          }
+        },
+        {
+          "client_id": "140599643580-161q0rbs881ruvn8jh21d021217p00mq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeOlJVKLugoZaVy7P1gUgPWj0bWvCkl2A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "140599643580-161q0rbs881ruvn8jh21d021217p00mq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "140599643580-m5mk71hmqg6ot9a8o3lg1kn5s7m7orf1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mgx.mgxclone"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

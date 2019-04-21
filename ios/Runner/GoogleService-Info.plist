@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>140599643580-2h69t90j2f45qu7ia7cppq2vibi6133p.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.140599643580-2h69t90j2f45qu7ia7cppq2vibi6133p</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>140599643580-v8o50eutkaar7l4v1itofchrahmlir33.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDXJny7RbiG41CUJ7ZNSBZAq9WaCRFUYEo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>140599643580</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.hooray.mgx.mgxClone</string>
+	<key>PROJECT_ID</key>
+	<string>mgxclone</string>
+	<key>STORAGE_BUCKET</key>
+	<string>mgxclone.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:140599643580:ios:f79a9dc66bcd416a</string>
+	<key>DATABASE_URL</key>
+	<string>https://mgxclone.firebaseio.com</string>
+</dict>
+</plist>
