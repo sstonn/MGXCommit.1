@@ -66,7 +66,7 @@ class FancyBottomNavigationState extends State<FancyBottomNavigation>
     circleColor = (widget.circleColor == null)
         ? (Theme.of(context).brightness == Brightness.dark)
             ? Colors.white
-            : Colors.redAccent
+            : Color(0xFF93db70)
         : widget.circleColor;
 
     activeIconColor = (widget.activeIconColor == null)
@@ -88,7 +88,7 @@ class FancyBottomNavigationState extends State<FancyBottomNavigation>
     inactiveIconColor = (widget.inactiveIconColor == null)
         ? (Theme.of(context).brightness == Brightness.dark)
             ? Colors.white
-            : Colors.redAccent
+            : Color(0xFF93db70)
         : widget.inactiveIconColor;
   }
 

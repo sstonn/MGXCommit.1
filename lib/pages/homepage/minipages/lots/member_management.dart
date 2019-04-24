@@ -41,16 +41,16 @@ class _MemberManagePageState extends State<MemberManagePage>{
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      backgroundColor: Color(0xFF2d3247),
+      backgroundColor: Color(0xFF93db70),
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
             icon: Icon(
               Icons.arrow_back_ios,
-              color: Colors.redAccent,
+              color: Color(0xFF93db70),
             ),
             onPressed: ()=>Navigator.pop(context)),
-        title: Text('Quản Lý Thành Viên',style: TextStyle(color: Colors.redAccent),),
+        title: Text('Quản Lý Thành Viên',style: TextStyle(color: Color(0xFF93db70),fontFamily: 'oscinebold'),),
       ),
       body: Container(
         child: Column(
@@ -64,8 +64,11 @@ class _MemberManagePageState extends State<MemberManagePage>{
                   style: TextStyle(color: Colors.white,fontFamily: 'oscinebold'),
                   controller: editingController,
                   decoration: InputDecoration(
-                      hintText: "Search",
-                      hintStyle: TextStyle(color: Colors.white30,fontFamily: 'oscinebold'),
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.white, width: 2.0),
+                      ),
+                      hintText: "Tìm kiếm thành viên",
+                      hintStyle: TextStyle(color: Colors.white70,fontFamily: 'oscinebold'),
                       prefixIcon: Icon(Icons.search,color: Colors.white,),
                       ),
                 ),
@@ -88,7 +91,7 @@ class _MemberManagePageState extends State<MemberManagePage>{
                                 alignment: Alignment.topCenter,
                                 child: SizedBox.fromSize
                                   (
-                                    size: Size.fromHeight(172.0),
+                                    size: Size.fromHeight(140.0),
                                     child: Stack
                                       (
                                       fit: StackFit.expand,
@@ -110,7 +113,7 @@ class _MemberManagePageState extends State<MemberManagePage>{
                                                 (
                                                   gradient: LinearGradient
                                                     (
-                                                      colors: [ Color(0xFFDA4453), Color(0xFF89216B) ]
+                                                      colors: [ Colors.white, Colors.white ]
                                                   )
                                               ),
                                               child: Padding
@@ -129,7 +132,7 @@ class _MemberManagePageState extends State<MemberManagePage>{
                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: <Widget>
                                                       [
-                                                        Text('${items[index]}', style: TextStyle(color: Colors.white)),
+                                                        Text('${items[index]}', style: TextStyle(color: Colors.black87)),
                                                         Row
                                                           (
                                                           mainAxisAlignment: MainAxisAlignment.start,
@@ -157,7 +160,7 @@ class _MemberManagePageState extends State<MemberManagePage>{
                                             padding: EdgeInsets.only(right: 16.0),
                                             child: SizedBox.fromSize
                                               (
-                                              size: Size.fromRadius(54.0),
+                                              size: Size.fromRadius(40),
                                               child: Material
                                                 (
                                                 elevation: 20.0,

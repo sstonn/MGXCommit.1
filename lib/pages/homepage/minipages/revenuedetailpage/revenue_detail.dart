@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sparkline/flutter_sparkline.dart';
 class RevenueDetailPage extends StatefulWidget {
+  RevenueDetailPage({Key key,this.title}): super(key: key);
+  final String title;
   @override
   State<StatefulWidget> createState() => new _RevenueDetailPageState();
 }
 class _RevenueDetailPageState extends State<RevenueDetailPage> {
-  final List<List<double>> charts = [
-    [
-      300000,400000,600000,250000,300000,400000,500000
-    ]
+  List<String> xe = [
+      'Xe đạp','Xe số','Xe ga'
   ];
-  static final List<String> chartDropdownItems = [
-    'Trong tuần'
-  ];
-  String actualDropdown = chartDropdownItems[0];
-  int actualChart = 0;
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -28,66 +23,47 @@ class _RevenueDetailPageState extends State<RevenueDetailPage> {
               Navigator.pop(context);
             }
         ),
-        title: Text('Xem doanh thu từng bãi',style: TextStyle(color: Colors.redAccent,fontFamily: "oscinebold"),),
+        title: Text('Xem doanh thu bãi',style: TextStyle(color: Colors.redAccent,fontFamily: "oscinebold"),),
       ),
       body: ListView.builder(
-          itemCount: 5,
+          itemCount: xe.length,
           itemBuilder: (context,index){
+            String name=xe[index];
             return Container(
-              margin:const EdgeInsets.all(24.0),
+              margin:const EdgeInsets.symmetric(horizontal: 40,vertical: 10),
               child:_buildTile(
-              Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Column(
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(padding: EdgeInsets.only(bottom: 16.0)),
+                        Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text('Doanh thu theo thời gian',
+                              Text('$name',
                                   style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "oscinebold")),
-                            ],
-                          ),
-                          DropdownButton(
-                              isDense: true,
-                              value: actualDropdown,
-                              onChanged: (String value) => setState(() {
-                                actualDropdown = value;
-                                actualChart = chartDropdownItems
-                                    .indexOf(value); // Refresh the chart
-                              }),
-                              items: chartDropdownItems.map((String title) {
-                                return DropdownMenuItem(
-                                  value: title,
-                                  child: Text(title,
-                                      style: TextStyle(
-                                          color: Colors.blue,
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 14.0,
-                                          fontFamily: "oscinebold")),
-                                );
-                              }).toList())
-                        ],
-                      ),
-                      Padding(padding: EdgeInsets.only(bottom: 4.0)),
-                      Sparkline(
-                        data: charts[actualChart],
-                        lineWidth: 5.0,
-                        pointsMode: PointsMode.all,
-                        pointSize: 8.0,
-                        pointColor: Colors.redAccent,
-                        lineColor: Colors.greenAccent,
-                      )
-                    ],
-                  )),
+                                      color: Colors.black,
+                                      fontFamily: "oscinebold",
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15)),
+                            ]),
+                        Padding(padding: EdgeInsets.only(left: 120.0)),
+                        Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                              Text('100K',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: "oscinebold",
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 24.0)),
+                            ]),
+                      ]),
+                ),
               ),
             );
           }

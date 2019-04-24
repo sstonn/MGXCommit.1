@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:mgx_clone/pages/homepage/minipages/lots/price_configuration.dart';
 import 'package:mgx_clone/pages/homepage/minipages/lots/member_management.dart';
 import 'package:mgx_clone/pages/detail_page.dart';
+
 class MyParkingPlacePage extends StatefulWidget {
   MyParkingPlacePage({Key key, this.auth, this.userId, this.onSignedOut})
       : super(key: key);
@@ -19,7 +20,7 @@ class MyParkingPlacePage extends StatefulWidget {
   State<StatefulWidget> createState() => new _MyParkingPlacePageState();
 }
 
-enum Answers { PRICE, MEMBER }
+enum Answers { PRICE, MEMBER,EDIT }
 
 class _MyParkingPlacePageState extends State<MyParkingPlacePage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -37,6 +38,7 @@ class _MyParkingPlacePageState extends State<MyParkingPlacePage> {
   Query _lotsQuery;
   final _textEditingController = TextEditingController();
   final _textEditingController1 = TextEditingController();
+  final _textEditingController2 = TextEditingController();
 
   @override
   void initState() {
@@ -96,20 +98,24 @@ class _MyParkingPlacePageState extends State<MyParkingPlacePage> {
     }
   }
 
-  _addNewPLots(String lotsItemName, String lotsItemAddress) {
+  _addNewPLots(
+      String lotsItemName, String lotsItemAddress, String lotItemDescription) {
     if (lotsItemName.length > 0) {
-      Lots lots = new Lots(
-          lotsItemName.toString(), widget.userId, lotsItemAddress.toString());
+      Lots lots = new Lots(lotsItemName.toString(), widget.userId,
+          lotsItemAddress.toString(), lotItemDescription.toString());
       database.reference().child("parkinglots").push().set(lots.toJson());
     }
   }
 
-  _updatePlots(String lotsItemName, String lotsItemAddress, String key) {
-    Lots lots = new Lots(lotsItemName, widget.userId, lotsItemAddress);
+  _updatePlots(String lotsItemName, String lotsItemAddress, String key,
+      String lotsItemDescription) {
+    Lots lots = new Lots(
+        lotsItemName, widget.userId, lotsItemAddress, lotsItemDescription);
     database.reference().child("parkinglots").child(key.toString()).update({
       "address": "" + lots.address,
       "lotsName": "" + lots.lotsName,
       "userId": "" + lots.userId,
+      "description": "" + lots.description,
     });
   }
 
@@ -138,97 +144,6 @@ class _MyParkingPlacePageState extends State<MyParkingPlacePage> {
     );
   }
 
-  IconButton _buildButton(IconData icon) {
-    return IconButton(
-      onPressed: () {},
-      icon: Icon(
-        icon,
-        color: Colors.white,
-      ),
-    );
-  }
-
-  Widget _buildBottomCardChildren() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Row(
-          children: <Widget>[_buildText("All"), Spacer(), _buildText("Done")],
-        ),
-        Container(
-          height: 24,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            _buildButton(Icons.radio_button_checked),
-            _buildButton(Icons.home),
-            _buildButton(Icons.settings),
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget _buildBottomCard(double width, double height) {
-    return Container(
-      width: width,
-      height: height / 3,
-      padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
-      decoration: BoxDecoration(
-          color: accentColor,
-          borderRadius: BorderRadius.only(
-              topRight: Radius.circular(16), topLeft: Radius.circular(16))),
-      child: _buildBottomCardChildren(),
-    );
-  }
-
-  _showDialogUpdate(BuildContext context, mname, maddress, mkey) async {
-    _textEditingController.clear();
-    await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: new Column(
-              children: <Widget>[
-                new Expanded(
-                    child: new TextField(
-                  controller: _textEditingController,
-                  autofocus: true,
-                  decoration: new InputDecoration(
-                    labelText: 'Tên bãi gửi',
-                  ),
-                )),
-                new Expanded(
-                    child: new TextField(
-                  controller: _textEditingController1,
-                  autofocus: true,
-                  decoration: new InputDecoration(
-                    labelText: 'Địa chỉ',
-                  ),
-                ))
-              ],
-            ),
-            actions: <Widget>[
-              new IconButton(
-                  icon: Icon(Icons.cancel),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
-              new IconButton(
-                  icon: Icon(Icons.save_alt),
-                  onPressed: () {
-                    mname = _textEditingController.text.toString();
-                    maddress = _textEditingController1.text.toString();
-                    _updatePlots(mname, maddress, mkey);
-                    Navigator.pop(context);
-                  })
-            ],
-          );
-        });
-  }
-
   Widget _buildCardsList() {
     if (lotsList.length > 0) {
       return ListView.builder(
@@ -237,89 +152,80 @@ class _MyParkingPlacePageState extends State<MyParkingPlacePage> {
           String lotsId = lotsList[index].key;
           String name = lotsList[index].lotsName;
           String address = lotsList[index].address;
+          String description=lotsList[index].description;
           String userId = lotsList[index].userId;
           var lotsElement = lotsList.elementAt(index);
-          return Container(
-            width: 120,
-            height: 200,
-            padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-            margin: EdgeInsets.only(left: 32, right: 32, top: 2, bottom: 2),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(16)),
-                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 1)]),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Text(
-                      name,
-                      style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'oscinebold'),
-                    ),
-                    Text(
-                      address,
-                      style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'oscinebold'),
-                    )
-                  ],
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    IconButton(
-                      onPressed: () {
-                        _configuration();
-                      },
-                      icon: Icon(
-                        Icons.info,
-                        color: Colors.grey,
+          return GestureDetector(
+            onTap: () {
+              _configuration(lotsList[index].lotsName,
+                  lotsList[index].address,
+                  lotsList[index].description,
+                  lotsList[index].key);
+            },
+            onLongPress: (){
+              _deleteconfiguration(lotsId, index);
+            },
+            child: Container(
+              width: 120,
+              height: 90,
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+              margin: EdgeInsets.only(left: 32, right: 32, top: 2, bottom: 2),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black12, blurRadius: 15)
+                  ]),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Text(
+                        name,
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'oscinebold'),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        _showDialogUpdate(context, lotsList[index].lotsName,
-                            lotsList[index].address, lotsList[index].key);
-                      },
-                      icon: Icon(
-                        Icons.update,
-                        color: Colors.grey,
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 2),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        _deleteTodo(lotsId, index);
-                      },
-                      icon: Icon(
-                        Icons.delete,
-                        color: Colors.grey,
+                      Text(
+                        address,
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'oscine'),
                       ),
-                    ),
-                  ],
-                )
-              ],
+                      Text(
+                        description,
+                        style: TextStyle(
+                            fontSize: 10,
+                            fontFamily: 'oscine'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           );
         },
       );
     } else {
       return Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-        "Bạn chưa thêm bãi xe nào, nhấn nút '+' để thêm mới",
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            fontSize: 20, fontFamily: 'oscinebold', color: Colors.white),
-      ));
+            "Bạn chưa thêm bãi xe nào, nhấn nút '+' để thêm mới",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 20, fontFamily: 'oscinebold', color: Colors.white),
+          ),
+        ),
+      );
     }
   }
 
@@ -327,60 +233,398 @@ class _MyParkingPlacePageState extends State<MyParkingPlacePage> {
     return IconButton(
       icon: Icon(
         Icons.add,
-        color: Colors.redAccent,
+        color: Color(0xFF93db70),
         size: 30.0,
       ),
       onPressed: () {
-        _showDialog(context);
+        _addconfiguration();
       },
     );
   }
 
-  _showDialog(BuildContext context) async {
-    _textEditingController.clear();
-    await showDialog<String>(
+  Future _addconfiguration() async {
+    await showDialog(
         context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: new Column(
+        child: AlertDialog(
+          content: new Container(
+            width: 260.0,
+            height: 230.0,
+            decoration: new BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: const Color(0xFFFFFF),
+              borderRadius: new BorderRadius.all(new Radius.circular(100)),
+            ),
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                // dialog top
                 new Expanded(
-                    child: new TextField(
-                  controller: _textEditingController,
-                  autofocus: true,
-                  decoration: new InputDecoration(
-                    labelText: 'Tên bãi gửi',
+                  child: new Row(
+                    children: <Widget>[
+                      new Container(
+                        // padding: new EdgeInsets.all(10.0),
+                        decoration: new BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        child: new Text(
+                          'Thêm bãi xe',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18.0,
+                            fontFamily: "oscinebold",
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
                   ),
-                )),
-                new Expanded(
-                    child: new TextField(
-                  controller: _textEditingController1,
-                  autofocus: true,
-                  decoration: new InputDecoration(
-                    labelText: 'Địa chỉ',
-                  ),
-                ))
+                ),
+
+                Row(
+                  // dialog centre
+                  children: <Widget>[
+                    Text('Tên bãi',style: TextStyle(color: Colors.black87,
+                      fontSize: 12.0,
+                      fontFamily: "oscinebold",),),
+                    new Expanded(
+                      child: new Container(
+                          child: new TextField(
+                        controller: _textEditingController,
+                        autofocus: true,
+                        keyboardType: TextInputType.text,
+                        decoration: new InputDecoration(
+                          border: InputBorder.none,
+                          filled: false,
+                          contentPadding: new EdgeInsets.only(
+                              left: 10.0, top: 10.0, bottom: 10.0, right: 10.0),
+                          hintText: 'Nhập tên bãi',
+                          hintStyle: new TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 12.0,
+                            fontFamily: "oscinebold",
+                          ),
+                        ),
+                      )),
+                      flex: 2,
+                    ),
+                  ],
+                ),
+                Row(
+                  // dialog centre
+                  children: <Widget>[
+                    Text('Địa chỉ',style: TextStyle(color: Colors.black87,
+                      fontSize: 12.0,
+                      fontFamily: "oscinebold",),),
+                    new Expanded(
+                      child: new Container(
+                          child: new TextField(
+                        controller: _textEditingController1,
+                        autofocus: true,
+                        keyboardType: TextInputType.text,
+                        decoration: new InputDecoration(
+                          border: InputBorder.none,
+                          filled: false,
+                          contentPadding: new EdgeInsets.only(
+                              left: 10.0, top: 10.0, bottom: 10.0, right: 10.0),
+                          hintText: 'Nhập địa chỉ',
+                          hintStyle: new TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 12.0,
+                            fontFamily: "oscinebold",
+                          ),
+                        ),
+                      )),
+                      flex: 2,
+                    ),
+                  ],
+                ),
+                Row(
+                  // dialog centre
+
+                  children: <Widget>[
+                    Text('Miêu tả',style: TextStyle(color: Colors.black87,
+                      fontSize: 12.0,
+                      fontFamily: "oscinebold",),),
+                    new Expanded(
+                      child: new Container(
+                          child: new TextField(
+                        controller: _textEditingController2,
+                        autofocus: true,
+                        keyboardType: TextInputType.text,
+                        decoration: new InputDecoration(
+                          border: InputBorder.none,
+                          filled: false,
+                          contentPadding: new EdgeInsets.only(
+                              left: 10.0, top: 10.0, bottom: 10.0, right: 10.0),
+                          hintText: 'Nhập miêu tả',
+                          hintStyle: new TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 12.0,
+                            fontFamily: "oscinebold",
+                          ),
+                        ),
+                      )),
+                      flex: 2,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    FlatButton(
+                        onPressed: () {
+                          _addNewPLots(
+                              _textEditingController.text.toString(),
+                              _textEditingController1.text.toString(),
+                              _textEditingController2.text.toString());
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Lưu lại',
+                          style: TextStyle(
+                              fontFamily: 'oscinebold', color: Colors.green),
+                        )),
+                    FlatButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Hủy bỏ',
+                          style: TextStyle(
+                              fontFamily: 'oscinebold',
+                              color: Colors.redAccent),
+                        )),
+                  ],
+                ),
               ],
             ),
-            actions: <Widget>[
-              new IconButton(
-                  icon: Icon(Icons.cancel),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
-              new IconButton(
-                  icon: Icon(Icons.save_alt),
-                  onPressed: () {
-                    _addNewPLots(_textEditingController.text.toString(),
-                        _textEditingController1.text.toString());
-                    Navigator.pop(context);
-                  })
-            ],
-          );
-        });
+          ),
+        ));
   }
 
-  Future _configuration() async {
+  Future _updateconfiguration(mname, maddress, mdescription, mkey) async {
+    await showDialog(
+        context: context,
+        child: AlertDialog(
+          content: new Container(
+            width: 260.0,
+            height: 230.0,
+            decoration: new BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: const Color(0xFFFFFF),
+              borderRadius: new BorderRadius.all(new Radius.circular(100)),
+            ),
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                // dialog top
+                new Expanded(
+                  child: new Row(
+                    children: <Widget>[
+                      new Container(
+                        // padding: new EdgeInsets.all(10.0),
+                        decoration: new BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        child: new Text(
+                          'Sửa bãi xe',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18.0,
+                            fontFamily: "oscinebold",
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                Row(
+                  // dialog centre
+                  children: <Widget>[
+                    Text('Tên bãi',style: TextStyle(color: Colors.black87,
+                      fontSize: 12.0,
+                      fontFamily: "oscinebold",),),
+                    new Expanded(
+                      child: new Container(
+                          child: new TextField(
+                            controller: _textEditingController,
+                            autofocus: true,
+                            keyboardType: TextInputType.text,
+                            decoration: new InputDecoration(
+                              border: InputBorder.none,
+                              filled: false,
+                              contentPadding: new EdgeInsets.only(
+                                  left: 10.0, top: 10.0, bottom: 10.0, right: 10.0),
+                              hintText: 'Nhập tên bãi',
+                              hintStyle: new TextStyle(
+                                color: Colors.grey.shade500,
+                                fontSize: 12.0,
+                                fontFamily: "oscinebold",
+                              ),
+                            ),
+                          )),
+                      flex: 2,
+                    ),
+                  ],
+                ),
+                Row(
+                  // dialog centre
+                  children: <Widget>[
+                    Text('Địa chỉ',style: TextStyle(color: Colors.black87,
+                      fontSize: 12.0,
+                      fontFamily: "oscinebold",),),
+                    new Expanded(
+                      child: new Container(
+                          child: new TextField(
+                            controller: _textEditingController1,
+                            autofocus: true,
+                            keyboardType: TextInputType.text,
+                            decoration: new InputDecoration(
+                              border: InputBorder.none,
+                              filled: false,
+                              contentPadding: new EdgeInsets.only(
+                                  left: 10.0, top: 10.0, bottom: 10.0, right: 10.0),
+                              hintText: 'Nhập địa chỉ',
+                              hintStyle: new TextStyle(
+                                color: Colors.grey.shade500,
+                                fontSize: 12.0,
+                                fontFamily: "oscinebold",
+                              ),
+                            ),
+                          )),
+                      flex: 2,
+                    ),
+                  ],
+                ),
+                Row(
+                  // dialog centre
+                  children: <Widget>[
+                    Text('Miêu tả',style: TextStyle(color: Colors.black87,
+                      fontSize: 12.0,
+                      fontFamily: "oscinebold",),),
+                    new Expanded(
+                      child: new Container(
+                          child: new TextField(
+                            controller: _textEditingController2,
+                            autofocus: true,
+                            keyboardType: TextInputType.text,
+                            decoration: new InputDecoration(
+                              border: InputBorder.none,
+                              filled: false,
+                              contentPadding: new EdgeInsets.only(
+                                  left: 10.0, top: 10.0, bottom: 10.0, right: 10.0),
+                              hintText: 'Nhập miêu tả',
+                              hintStyle: new TextStyle(
+                                color: Colors.grey.shade500,
+                                fontSize: 12.0,
+                                fontFamily: "oscinebold",
+                              ),
+                            ),
+                          )),
+                      flex: 2,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    FlatButton(
+                        onPressed: () {
+                          mname = _textEditingController.text.toString();
+                          maddress = _textEditingController1.text.toString();
+                          mdescription =
+                              _textEditingController2.text.toString();
+                          _updatePlots(mname, maddress, mkey, mdescription);
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Lưu lại',
+                          style: TextStyle(
+                              fontFamily: 'oscinebold', color: Colors.green),
+                        )),
+                    FlatButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Hủy bỏ',
+                          style: TextStyle(
+                              fontFamily: 'oscinebold',
+                              color: Colors.redAccent),
+                        )),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ));
+  }
+  Future _deleteconfiguration(lotsId,index) async {
+    await showDialog(
+        context: context,
+        child: AlertDialog(
+          content: new Container(
+            width: 260.0,
+            height: 100,
+            decoration: new BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: const Color(0xFFFFFF),
+              borderRadius: new BorderRadius.all(new Radius.circular(100)),
+            ),
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                new Expanded(
+                  child: new Row(
+                    children: <Widget>[
+                      new Container(
+                        // padding: new EdgeInsets.all(10.0),
+                        decoration: new BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        child: new Text(
+                          'Bạn có chắc chắc muốn xóa?',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18.0,
+                            fontFamily: "oscinebold",
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  children: <Widget>[
+                    FlatButton(
+                        onPressed: () {
+                          _deleteTodo(lotsId, index);
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Có',
+                          style: TextStyle(
+                              fontFamily: 'oscinebold', color: Colors.green),
+                        )),
+                    FlatButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Hủy bỏ',
+                          style: TextStyle(
+                              fontFamily: 'oscinebold',
+                              color: Colors.redAccent),
+                        )),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ));
+  }
+  Future _configuration(mname,maddress,mdescription,mkey) async {
     switch (await showDialog(
         context: context,
         child: new SimpleDialog(
@@ -398,6 +642,12 @@ class _MyParkingPlacePageState extends State<MyParkingPlacePage> {
                 Navigator.pop(context, Answers.MEMBER);
               },
             ),
+            new SimpleDialogOption(
+              child: new Text("Sửa bãi xe"),
+              onPressed: () {
+                Navigator.pop(context, Answers.EDIT);
+              },
+            ),
           ],
         ))) {
       case Answers.PRICE:
@@ -408,6 +658,9 @@ class _MyParkingPlacePageState extends State<MyParkingPlacePage> {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => MemberManagePage()));
         break;
+      case Answers.EDIT:
+        _updateconfiguration(mname, maddress, mdescription, mkey);
+        break;
     }
   }
 
@@ -416,25 +669,26 @@ class _MyParkingPlacePageState extends State<MyParkingPlacePage> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: Color(0xFF2d3247),
+      backgroundColor: Color(0xFF93db70),
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
             icon: Icon(
               Icons.contact_phone,
-              color: Colors.redAccent,
+              color: Color(0xFF93db70),
               size: 30.0,
             ),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>DetailPage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => DetailPage()));
             }),
         title: _buildAdd(),
         actions: <Widget>[
           IconButton(
               icon: Icon(
                 FontAwesomeIcons.signOutAlt,
-                color: Colors.redAccent,
+                color: Color(0xFF93db70),
                 size: 30.0,
               ),
               onPressed: () {

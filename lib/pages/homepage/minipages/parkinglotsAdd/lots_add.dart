@@ -3,8 +3,11 @@ import 'package:firebase_database/firebase_database.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:mgx_clone/model/parkingLots.dart';
-
+import 'package:mgx_clone/services/authentication.dart';
 class MyLotsAddPage extends StatefulWidget {
+  MyLotsAddPage({Key key, this.userId})
+      : super(key: key);
+  final String userId;
   @override
   State<StatefulWidget> createState() => new _MyLotsAddPageState();
 }
@@ -12,42 +15,84 @@ class MyLotsAddPage extends StatefulWidget {
 class _MyLotsAddPageState extends State<MyLotsAddPage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   Lots lots;
+  List<Lots> lotsList=new List();
   DatabaseReference lotsRef;
   final FirebaseDatabase database = FirebaseDatabase.instance;
+  StreamSubscription<Event> _onTodoAddedSubscription;
+  StreamSubscription<Event> _onTodoChangedSubscription;
+  StreamSubscription<Event> _onTodoRemovedSubscription;
+  Query _lotsQuery;
   bool isAdded;
   @override
   void initState() {
     isAdded=false;
     super.initState();
     SystemChrome.setEnabledSystemUIOverlays([]);
+    _lotsQuery = database
+        .reference()
+        .child("parkinglots")
+        .orderByChild("userId")
+        .equalTo(widget.userId);
+    _onTodoAddedSubscription = _lotsQuery.onChildAdded.listen(_onEntryAdded);
+    _onTodoChangedSubscription =
+        _lotsQuery.onChildChanged.listen(_onEntryChanged);
+    _onTodoRemovedSubscription =
+        _lotsQuery.onChildRemoved.listen(_onEntryRemoved);
   }
 
   @override
   void dispose() {
+    _onTodoAddedSubscription.cancel();
+    _onTodoChangedSubscription.cancel();
+    _onTodoRemovedSubscription.cancel();
     super.dispose();
   }
+  _onEntryChanged(Event event) {
+    var oldEntry = lotsList.singleWhere((entry) {
+      return entry.key == event.snapshot.key;
+    });
 
+    setState(() {
+      lotsList[lotsList.indexOf(oldEntry)] = Lots.fromSnapshot(event.snapshot);
+    });
+  }
+
+  _onEntryAdded(Event event) {
+    setState(() {
+      lotsList.add(Lots.fromSnapshot(event.snapshot));
+    });
+  }
+
+  _onEntryRemoved(Event event) {
+    setState(() {
+      lotsList.remove(Lots.fromSnapshot(event.snapshot));
+    });
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      backgroundColor: Color(0xFF2d3247),
+      backgroundColor: Color(0xFF93db70),
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios,color: Colors.redAccent,),
+            icon: Icon(Icons.arrow_back_ios,color: Color(0xFF93db70),),
             onPressed: ()=>Navigator.pop(context),
         ),
         title: Text(
           'Danh sách bãi hiện có',
-          style: TextStyle(fontFamily: 'oscinebold', color: Colors.redAccent),
+          style: TextStyle(fontFamily: 'oscinebold', color: Color(0xFF93db70)),
         ),
       ),
       body: ListView.builder(
-          itemCount: 5,
+          itemCount: lotsList.length,
           scrollDirection: Axis.vertical,
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           itemBuilder: (context, index) {
+            String key=lotsList[index].key;
+            String name=lotsList[index].lotsName;
+            String address=lotsList[index].address;
+            String description=lotsList[index].description;
             return Container(
               margin: EdgeInsets.only(top: 24.0),
               child: _buildTile(
@@ -61,20 +106,25 @@ class _MyLotsAddPageState extends State<MyLotsAddPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text('Tên bãi',
+                            Text('$name',
                                 style: TextStyle(
                                     color: Colors.black,
-                                    fontSize: 16,
+                                    fontSize: 15,
                                     fontFamily: "oscinebold")),
-                            Text('Địa chỉ',
+                            Text('$address',
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
-                                    fontFamily: "oscinebold"))
+                                    fontFamily: "oscine")),
+                            Text('$description',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 10,
+                                    fontFamily: "oscine"))
                           ],
                         ),
                         Material(
-                            color: isAdded==true?Colors.green:Colors.redAccent,
+                            color: isAdded==true?Color(0xFF93db70):Colors.redAccent,
                             borderRadius: BorderRadius.circular(24.0),
                             child: Container(
                                 child: Padding(
@@ -84,6 +134,11 @@ class _MyLotsAddPageState extends State<MyLotsAddPage> {
                             )))
                       ]),
                 ),
+                onTap: (){
+                  setState(() {
+                    isAdded=!isAdded;
+                  });
+                }
               ),
             );
           }),
@@ -116,6 +171,7 @@ class _MyLotsAddPageState extends State<MyLotsAddPage> {
                             isAdded=true;
                           });
                           Navigator.pop(context);
+                          Navigator.pop(context);
                         },
                         child: Text(
                           'Có',
@@ -124,6 +180,7 @@ class _MyLotsAddPageState extends State<MyLotsAddPage> {
                         )),
                     FlatButton(
                         onPressed: () {
+                          Navigator.pop(context);
                           Navigator.pop(context);
                         },
                         child: Text(
